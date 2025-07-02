@@ -24,10 +24,12 @@ pipeline {
 
     stage('Build Docker Image') {
       steps {
-        sh '''
-          echo "Building Docker image..."
-          docker build -t $NEXUS_REGISTRY/efris:$VERSION-$QUALIFIER .
-        '''
+        dir('tcs'){
+          sh '''
+            echo "Building Docker image..."
+            docker build -t $NEXUS_REGISTRY/efris:$VERSION-$QUALIFIER .
+          '''
+        }
       }
     }
 
