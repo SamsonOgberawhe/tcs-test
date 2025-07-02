@@ -10,19 +10,6 @@ pipeline {
   }
 
   stages {
-    stage('Download from S3') {
-      steps {
-        withCredentials([
-          [$class: 'StringBinding', credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'],
-          [$class: 'StringBinding', credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY']
-        ]) {
-          sh '''
-            echo "Verifying AWS credentials..."
-            aws s3 cp s3://$S3_BUCKET/$S3_OBJECT efris_server.tar.gz
-          '''
-        }
-      }
-    }
 
     stage('Build Docker Image') {
       steps {
