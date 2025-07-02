@@ -15,7 +15,7 @@ pipeline {
       steps {
         sh '''
           echo "Building Docker image..."
-          docker build -t $NEXUS_REGISTRY/efris:$VERSION-$QUALIFIER efris_server
+          docker build -t $NEXUS_REGISTRY/efris:$VERSION-$QUALIFIER .
         '''
       }
     }
