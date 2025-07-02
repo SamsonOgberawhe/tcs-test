@@ -11,6 +11,17 @@ pipeline {
 
   stages {
 
+    stage('check root folder content'){
+
+      steps {
+        sh '''
+          echo "Jenkins workspace contents:"
+          pwd
+          ls -la
+        '''
+      }
+    }
+
     stage('Build Docker Image') {
       steps {
         sh '''
