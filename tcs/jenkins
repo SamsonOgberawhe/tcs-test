@@ -1,35 +1,50 @@
-pipeline {
-  agent any
+#!/usr/bin/env groovy
 
-  parameters {
-    string(name: 'S3_BUCKET', defaultValue: 's3-bucket-name', description: 'S3 bucket name')
-    string(name: 'S3_OBJECT', defaultValue: 'path/to/efris_server.tar.gz', description: 'S3 object path')
-    string(name: 'VERSION', defaultValue: '1.0.0', description: 'App version')
+pipeline {
+  agent {
+    kubernetes {
+      defaultContainer 'builder'
+      inheritFrom 'builder-java11'
+    }
+  }
+
+   parameters {
+    string(name: 'VERSION', defaultValue: '21', description: 'Server Version')
     string(name: 'QUALIFIER', defaultValue: 'release', description: 'Image qualifier')
-    string(name: 'NEXUS_REGISTRY', defaultValue: 'nexus.example.com:8082', description: 'Nexus Docker registry')
+  }
+  
+  environment {
+    S3_BUCKET = 'efris-swat-dev-js'
+    S3_OBJECT = 'EFRIS_Offline_Mode_Enabler_for_Ubuntu_V' + VERSION + '.tar.gz'
+    NEXUS_REGISTRY = 'nexus.example.com:8082'
   }
 
   stages {
-
-    stage('check root folder content'){
-
+    stage('Download from S3') {
       steps {
-        sh '''
-          echo "Jenkins workspace contents:"
-          pwd
-          ls -la
-        '''
+        withCredentials([
+            [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'efris_swat_dev_js_s3']
+        ]) {
+           sh '''
+               echo "Creating tcs/config folder if not exists..."
+               mkdir -p tcs/config
+
+               echo "Downloading efris_server.tar.gz into tcs/config..."
+               aws s3 cp s3://$S3_BUCKET/$S3_OBJECT tcs/config/efris_server.tar.gz
+
+               echo "Verifying efris_server download..."
+               ls -lh tcs/config/efris_server.tar.gz
+             '''
+        }
       }
     }
 
     stage('Build Docker Image') {
       steps {
-        dir('tcs'){
-          sh '''
-            echo "Building Docker image..."
-            docker build -t $NEXUS_REGISTRY/efris:$VERSION-$QUALIFIER .
-          '''
-        }
+        sh '''
+          echo "Building Docker image..."
+          docker build -t $NEXUS_REGISTRY/efris:$VERSION-$QUALIFIER .
+        '''
       }
     }
 
