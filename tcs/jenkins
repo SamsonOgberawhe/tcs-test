@@ -1,12 +1,7 @@
 #!/usr/bin/env groovy
 
 pipeline {
-  agent {
-    kubernetes {
-      defaultContainer 'builder'
-      inheritFrom 'builder-java11'
-    }
-  }
+  agent any
 
    parameters {
     string(name: 'VERSION', defaultValue: '21', description: 'Server Version')
