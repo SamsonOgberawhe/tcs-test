@@ -4,8 +4,8 @@ pipeline {
   agent any
 
   parameters {
-    string(name: 'VERSION', defaultValue: '21', description: 'Server Version')
-    choice(name: 'QUALIFIER', choices: ['snapshot', 'release'], description: 'Image qualifier')
+    string(name: 'VERSION', defaultValue: '21')
+    choice(name: 'QUALIFIER', choices: ['snapshot', 'release'])
   }
 
   environment {
