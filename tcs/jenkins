@@ -3,14 +3,14 @@
 pipeline {
   agent any
 
-   parameters {
+  parameters {
     string(name: 'VERSION', defaultValue: '21', description: 'Server Version')
     string(name: 'QUALIFIER', defaultValue: 'release', description: 'Image qualifier')
   }
-  
+
   environment {
     S3_BUCKET = 'efris-swat-dev-js'
-    S3_OBJECT = 'EFRIS_Offline_Mode_Enabler_for_Ubuntu_V' + VERSION + '.tar.gz'
+    S3_OBJECT = 'EFRIS_Offline_Mode_Enabler_for_Ubuntu_V' + '$VERSION' + '.tar.gz'
     NEXUS_REGISTRY = 'nexus.example.com:8082'
   }
 
@@ -18,9 +18,9 @@ pipeline {
     stage('Download from S3') {
       steps {
         withCredentials([
-            [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'efris_swat_dev_js_s3']
+                [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'efris_swat_dev_js_s3']
         ]) {
-           sh '''
+          sh '''
                echo "Creating tcs/config folder if not exists..."
                mkdir -p tcs/config
 
@@ -50,7 +50,7 @@ pipeline {
           docker rm -f efris_container || true
           docker run -d --name efris_container -p 9880:9880 $NEXUS_REGISTRY/efris:$VERSION-$QUALIFIER
         '''
-     }
+      }
     }
 
     stage('Push Docker Image to Nexus') {
@@ -67,11 +67,11 @@ pipeline {
   }
 
   post {
-      success {
-        echo "Docker container started and image pushed successfully: $NEXUS_REGISTRY/efris:$VERSION-$QUALIFIER"
-      }
-      failure {
-        echo "Pipeline failed. Check logs."
-      }
+    success {
+      echo "Docker container started and image pushed successfully: $NEXUS_REGISTRY/efris:$VERSION-$QUALIFIER"
     }
+    failure {
+      echo "Pipeline failed. Check logs."
+    }
+  }
 }
