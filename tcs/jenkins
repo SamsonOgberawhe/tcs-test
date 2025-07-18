@@ -5,7 +5,7 @@ pipeline {
 
   parameters {
     string(name: 'VERSION', defaultValue: '21', description: 'Server Version')
-    string(name: 'QUALIFIER', defaultValue: 'release', description: 'Image qualifier')
+    choice(name: 'QUALIFIER', choices: ['snapshot', 'release'], description: 'Image qualifier')
   }
 
   environment {
