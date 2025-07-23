@@ -21,7 +21,13 @@ pipeline {
           dir('ug/server/tcs') {
             sh '''
               echo "Current directory: $(pwd)"
+
+              echo "Listing files in build directory:"
+              pwd
+              ls -l
               echo "Building Docker image..."
+
+           
               docker build -t $NEXUS_REGISTRY/efris:$VERSION-$QUALIFIER .
             '''
         }
