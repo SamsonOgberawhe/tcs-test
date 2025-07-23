@@ -19,7 +19,7 @@ pipeline {
 
   stage('Checkout Source') {
   steps {
-    dir('ug/server/tcs') {
+    dir('ug/server/') {
       checkout scm
       }
     }
