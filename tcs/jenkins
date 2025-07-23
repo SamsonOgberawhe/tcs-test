@@ -15,25 +15,6 @@ pipeline {
   }
 
   stages {
-    stage('Download from S3') {
-      steps {
-        withCredentials([
-            [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'efris_swat_dev_js_s3']
-        ]) {
-           sh '''
-               echo "Creating tcs/config folder if not exists..."
-               mkdir -p tcs/config
-
-               echo "Downloading efris_server.tar.gz into tcs/config..."
-               aws s3 cp s3://$S3_BUCKET/$S3_OBJECT tcs/config/efris_server.tar.gz
-
-               echo "Verifying efris_server download..."
-               ls -lh tcs/config/efris_server.tar.gz
-             '''
-        }
-      }
-    }
-
     stage('Build Docker Image') {
       steps {
           dir('ug/server/tcs') {
