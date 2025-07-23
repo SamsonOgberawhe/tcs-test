@@ -2,7 +2,12 @@
 
 pipeline {
 
- agent any
+  agent {
+    docker {
+      image 'docker:20.10.24-dind'
+      args '--privileged' // Needed for DinD
+    }
+  }
 
   parameters {
     string(name: 'VERSION', defaultValue: '21')
