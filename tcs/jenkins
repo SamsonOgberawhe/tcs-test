@@ -17,11 +17,14 @@ pipeline {
 
   stages {
 
-    stage('Checkout Source') {
-      steps {
-        checkout scm
+  stage('Checkout Source') {
+  steps {
+    dir('ug/server/tcs') {
+      checkout scm
       }
     }
+  }
+
 
     stage('Build Docker Image') {
       steps {
