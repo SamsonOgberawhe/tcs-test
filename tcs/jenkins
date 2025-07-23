@@ -15,14 +15,14 @@ pipeline {
     NEXUS_REGISTRY = 'nexus.example.com:8082'
   }
 
+  stages {
 
- stage('Checkout Source') {
+    stage('Checkout Source') {
       steps {
         checkout scm
       }
     }
 
-  stages {
     stage('Build Docker Image') {
       steps {
           dir('ug/server/tcs') {
