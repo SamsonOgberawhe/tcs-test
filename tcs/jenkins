@@ -18,9 +18,9 @@ pipeline {
     stage('Download from S3') {
       steps {
         withCredentials([
-                [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'efris_swat_dev_js_s3']
+            [$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'efris_swat_dev_js_s3']
         ]) {
-          sh '''
+           sh '''
                echo "Creating tcs/config folder if not exists..."
                mkdir -p tcs/config
 
@@ -36,10 +36,13 @@ pipeline {
 
     stage('Build Docker Image') {
       steps {
-        sh '''
-          echo "Building Docker image..."
-          docker build -t $NEXUS_REGISTRY/efris:$VERSION-$QUALIFIER .
-        '''
+          dir('ug/server/tcs') {
+            sh '''
+              echo "Current directory: $(pwd)"
+              echo "Building Docker image..."
+              docker build -t $NEXUS_REGISTRY/efris:$VERSION-$QUALIFIER .
+            '''
+        }
       }
     }
 
@@ -50,7 +53,7 @@ pipeline {
           docker rm -f efris_container || true
           docker run -d --name efris_container -p 9880:9880 $NEXUS_REGISTRY/efris:$VERSION-$QUALIFIER
         '''
-      }
+     }
     }
 
     stage('Push Docker Image to Nexus') {
@@ -67,11 +70,11 @@ pipeline {
   }
 
   post {
-    success {
-      echo "Docker container started and image pushed successfully: $NEXUS_REGISTRY/efris:$VERSION-$QUALIFIER"
+      success {
+        echo "Docker container started and image pushed successfully: $NEXUS_REGISTRY/efris:$VERSION-$QUALIFIER"
+      }
+      failure {
+        echo "Pipeline failed. Check logs."
+      }
     }
-    failure {
-      echo "Pipeline failed. Check logs."
-    }
-  }
 }
